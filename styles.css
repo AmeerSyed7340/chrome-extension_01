@@ -5,7 +5,7 @@
     top: 50%;
     transform: translateY(-50%);
     width: 200px;
-    max-height: 500px;
+    max-height: 200px;
     padding: 10px;
     background-color: #e0ebc7;
     border: 1px solid #ccc;
@@ -14,3 +14,10 @@
     overflow: auto;
   }
   
+  .btn-style{
+    display: block;    
+    font-size: 1rem;
+    background-color: #e0ebc7;
+    border-radius: 5px;
+    border: 1px solid black;
+  }
