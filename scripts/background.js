@@ -1,6 +1,7 @@
 let latestHighlight = null; // Store the latest highlighted text
 const highlightBytab = new Map(); // map ds to store each tab by id
 
+//listen for messages
 chrome.runtime.onMessage.addListener(function (
   request,
   sender,
@@ -71,4 +72,11 @@ chrome.runtime.onMessage.addListener(function (
     // }
   }
   return true; // Ensure async responses are allowed
+});
+
+//listen for when a tab is closed
+chrome.tabs.onRemoved.addListener((tabId, {})=>{
+  if(highlightBytab.has(tabId)){
+    highlightBytab.delete(tabId);
+  }  
 });
