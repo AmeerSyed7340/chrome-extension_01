@@ -1,12 +1,14 @@
 /* styles.css */
 .popup-style {
-    max-height: 200px;
+    height: 200px;
+    width: 100%;
     padding: 10px;
     background-color: #e0ebc7;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
     overflow: auto;
+    
   }
   
   .btn-style{
@@ -21,5 +23,5 @@
 
   .main-div{
     height: 400px;
-    width: 400px;
+    width: 300px;
   }

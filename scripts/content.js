@@ -8,12 +8,13 @@ function foo() {
     console.log("Highlighted text:", selObj);
 
     //message passing api - single message
-     (async () => {
-      const response = await chrome.runtime.sendMessage({greeting: "hello"});
-      // do something with response here, not outside the function
+    (async () => {
+      const response = await chrome.runtime.sendMessage({ action: "highlight", text: selObj });
+
+      // do something with "response" here, not outside the function
       console.log(response);
-     })();
-    
+    })();
+   
   }
 }
 
