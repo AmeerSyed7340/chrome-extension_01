@@ -76,7 +76,17 @@ chrome.runtime.onMessage.addListener(function (
 
 //listen for when a tab is closed
 chrome.tabs.onRemoved.addListener((tabId, {})=>{
-  if(highlightBytab.has(tabId)){
-    highlightBytab.delete(tabId);
-  }  
+  deleteTabFromMap(tabId);
 });
+
+//listen for when a tab is updated
+chrome.tabs.onUpdated.addListener((tabId, {}, tab)=>{
+  deleteTabFromMap(tabId);
+});
+
+//helper function to delete tab
+function deleteTabFromMap(tabId) {
+  if (highlightBytab.has(tabId)) {
+    highlightBytab.delete(tabId);
+  }
+}
