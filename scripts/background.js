@@ -2,11 +2,7 @@ let latestHighlight = null; // Store the latest highlighted text
 const highlightBytab = new Map(); // map ds to store each tab by id
 
 //listen for messages
-chrome.runtime.onMessage.addListener(function (
-  request,
-  sender,
-  sendResponse
-) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "highlight") {
     console.log({ text: request.text, tabId: sender.tab?.id });
 
@@ -28,60 +24,45 @@ chrome.runtime.onMessage.addListener(function (
       sendResponse({ status: "Error: No tab associated with sender." });
     }
   }
-  //LISTEN FROM POPUP
+
+  //listen from popup
   if (request.action === "getHighlight") {
-    (async ()=>{
-      const [activeTab] = await chrome.tabs.query({
-        active: true,
-        lastFocusedWindow: true,
-      });
+    (async () => {
+      try {
+        const [activeTab] = await chrome.tabs.query({
+          active: true,
+          lastFocusedWindow: true,
+        });
 
-      //get the tabId
-      const tabID = activeTab.id;
-      const tabHighlight = highlightBytab.get(tabID) || "Nothing highlighted yet";
-      sendResponse({text: tabHighlight});
+        //if no active tab found due to edge case scenarios
+        if (!activeTab) {
+          throw new Error("No active tab found.");
+        }
+        //get the tabId
+        const tabID = activeTab.id;
+        const tabHighlight =
+          highlightBytab.get(tabID) || "Nothing highlighted yet";
+
+        sendResponse({ text: tabHighlight });
+      } catch (error) {
+        console.error("Error in getHighlight handler in background.js:", error);
+        sendResponse({ text: "Error retrieving highlighted text." });
+      }
     })();
-    
-
-    // try {
-    //   // Fetch the active tab's ID
-    //   const activeTab = await chrome.tabs.query({
-    //     active: true,
-    //     lastFocusedWindow: true,
-    //   });
-
-    //   console.log("Active Tab:", activeTab);
-
-    //   if (activeTab) {
-    //     const tabId = activeTab.id; // Extract the tabId
-    //     const uniqueHighlight = highlightBytab.get(tabId) || "No highlight yet";
-
-    //     console.log("Before sendResponse");
-    //     // Send latest highlight back to popup as response
-    //     sendResponse({ text: 'helo' });
-
-    //     console.log("After sendResponse");
-
-    //   } else {
-    //     console.error("No active tab found");
-    //     sendResponse({ text: "Unable to determine active tab" });
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching active tab:", error);
-    //   sendResponse({ text: "An error occurred while fetching the highlight." });
-    // }
   }
   return true; // Ensure async responses are allowed
 });
 
 //listen for when a tab is closed
-chrome.tabs.onRemoved.addListener((tabId, {})=>{
+chrome.tabs.onRemoved.addListener((tabId, {}) => {
   deleteTabFromMap(tabId);
 });
 
 //listen for when a tab is updated
-chrome.tabs.onUpdated.addListener((tabId, {}, tab)=>{
-  deleteTabFromMap(tabId);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "loading") {
+    deleteTabFromMap(tabId);
+  }
 });
 
 //helper function to delete tab
